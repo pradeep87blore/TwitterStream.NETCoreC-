@@ -7,17 +7,17 @@ namespace TwitterStream
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
             TwitterAccesser twitterAccess = new TwitterAccesser();
 
-           //
+            Console.WriteLine("Welcome, the following are my 10 most recent tweets:\n\n");
             var tweets = twitterAccess.GetTweets("@pradeep87blore1", 10).Result;
 
             foreach (var tweet in tweets)
             {
-                Console.WriteLine(tweet);
+                Console.WriteLine(tweet + "\n");
             }
 
+            Console.WriteLine("Press any key to exit");
             Console.ReadKey(); // To prevent the console app from existing
         }
     }

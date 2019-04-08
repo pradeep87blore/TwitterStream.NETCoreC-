@@ -16,6 +16,8 @@ namespace TwitterAccess
         public string OAuthConsumerSecret { get; set; }
         public string OAuthConsumerKey { get; set; }
 
+        private HttpClientHandler handler = null;
+
         public TwitterAccesser()
         {
             using (StreamReader file = new StreamReader(".\\Private\\TwitterKeys.keys"))
@@ -25,6 +27,19 @@ namespace TwitterAccess
                 OAuthConsumerKey = file.ReadLine();
                 OAuthConsumerSecret = file.ReadLine();
             }
+
+            string proxyAddr = "";
+            using (StreamReader file = new StreamReader(".\\Private\\Proxy.proxy"))
+            {
+                proxyAddr = file.ReadLine();
+            }
+
+            handler = new HttpClientHandler()
+            {
+                
+                Proxy = new WebProxy(proxyAddr),
+                UseProxy = true,
+            };
 
         }
 
@@ -37,11 +52,7 @@ namespace TwitterAccess
 
             var requestUserTimeline = new HttpRequestMessage(HttpMethod.Get, string.Format("https://api.twitter.com/1.1/statuses/user_timeline.json?count={0}&screen_name={1}&trim_user=1&exclude_replies=1", count, userName));
             requestUserTimeline.Headers.Add("Authorization", "Bearer " + accessToken);
-            HttpClientHandler handler = new HttpClientHandler()
-            {
-                Proxy = new WebProxy("http://165.225.96.34:9480"),
-                UseProxy = true,
-            };
+            
 
             var httpClient = new HttpClient(handler);
             HttpResponseMessage responseUserTimeLine = await httpClient.SendAsync(requestUserTimeline);
@@ -57,11 +68,6 @@ namespace TwitterAccess
 
         async Task<string> GetAccessToken()
         {
-            HttpClientHandler handler = new HttpClientHandler()
-            {
-                Proxy = new WebProxy("http://165.225.96.34:9480"),
-                UseProxy = true,
-            };
 
             var httpClient = new HttpClient(handler);
             var request = new HttpRequestMessage(HttpMethod.Post, "https://api.twitter.com/oauth2/token ");

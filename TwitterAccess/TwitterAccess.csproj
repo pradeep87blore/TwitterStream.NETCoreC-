@@ -9,6 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Private\Proxy.proxy">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Private\TwitterKeys.keys">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
