@@ -17,7 +17,9 @@
 # Protected Keys
 Private/
 
+
 # Build results
+Output/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

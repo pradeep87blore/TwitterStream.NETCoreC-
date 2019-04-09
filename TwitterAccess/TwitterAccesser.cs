@@ -57,13 +57,13 @@ namespace TwitterAccess
             var httpClient = new HttpClient(handler);
             HttpResponseMessage responseUserTimeLine = await httpClient.SendAsync(requestUserTimeline);
             dynamic json = JsonConvert.DeserializeObject<object>(await responseUserTimeLine.Content.ReadAsStringAsync());
-            var enumerableTwitts = (json as IEnumerable<dynamic>);
+            var enumerableTweets = (json as IEnumerable<dynamic>);
 
-            if (enumerableTwitts == null)
+            if (enumerableTweets == null)
             {
                 return null;
             }
-            return enumerableTwitts.Select(t => (string)(t["text"].ToString()));
+            return enumerableTweets.Select(t => (string)(t["text"].ToString()));
         }
 
         async Task<string> GetAccessToken()
