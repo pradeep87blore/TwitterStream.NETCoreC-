@@ -16,6 +16,10 @@ namespace TwitterAccess
 
         public int statuses_count;
 
+        public int followers_count;
+
+        public int friends_count;
+
         public string profile_background_image_url;
 
         public string profile_image_url;
@@ -24,6 +28,7 @@ namespace TwitterAccess
 
         public bool default_profile_image;
 
+        public string profile_description;
 
     }
 }
