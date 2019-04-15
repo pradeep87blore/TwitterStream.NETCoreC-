@@ -34,13 +34,37 @@ namespace TwitterAccess
                 proxyAddr = file.ReadLine();
             }
 
-            handler = new HttpClientHandler()
+            if (proxyAddr != null)
             {
-                
-                Proxy = new WebProxy(proxyAddr),
-                UseProxy = true,
-            };
+                handler = new HttpClientHandler()
+                {
 
+                    Proxy = new WebProxy(proxyAddr),
+                    UseProxy = true,
+                };
+            }
+            else
+            {
+                handler = new HttpClientHandler();
+                handler.UseProxy = false;
+            }
+
+        }
+
+        async Task<string> GetAccessToken()
+        {
+
+            var httpClient = new HttpClient(handler);
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.twitter.com/oauth2/token ");
+            var customerInfo = Convert.ToBase64String(new UTF8Encoding().GetBytes(OAuthConsumerKey + ":" + OAuthConsumerSecret));
+            request.Headers.Add("Authorization", "Basic " + customerInfo);
+
+            request.Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            HttpResponseMessage response = await httpClient.SendAsync(request);
+            string json = await response.Content.ReadAsStringAsync();
+            dynamic item = JsonConvert.DeserializeObject<object>(json);
+            return item["access_token"];
         }
 
         public async Task<IEnumerable<string>> GetTweets(string userName, int count, string accessToken = null)
@@ -66,20 +90,42 @@ namespace TwitterAccess
             return enumerableTweets.Select(t => (string)(t["text"].ToString()));
         }
 
-        async Task<string> GetAccessToken()
-        {
+
+        public async Task<UserObject> GetUserInfo(string userId, string accessToken = null)
+        {           
+
+            if (accessToken == null)
+            {
+                accessToken = await GetAccessToken();
+            }
+
+            var requestUserProfile = new HttpRequestMessage(HttpMethod.Get,
+                string.Format("https://api.twitter.com/1.1/users/lookup.json?screen_name={0}", userId));
+            requestUserProfile.Headers.Add("Authorization", "Bearer " + accessToken);
+
 
             var httpClient = new HttpClient(handler);
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.twitter.com/oauth2/token ");
-            var customerInfo = Convert.ToBase64String(new UTF8Encoding().GetBytes(OAuthConsumerKey + ":" + OAuthConsumerSecret));
-            request.Headers.Add("Authorization", "Basic " + customerInfo);
-            
-            request.Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
+            HttpResponseMessage responseUserTimeLine = await httpClient.SendAsync(requestUserProfile);
+            var response = await responseUserTimeLine.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject<object>(response);
+            //var enumerableUserProfile = (json as IEnumerable<dynamic>);
 
-            HttpResponseMessage response = await httpClient.SendAsync(request);
-            string json = await response.Content.ReadAsStringAsync();
-            dynamic item = JsonConvert.DeserializeObject<object>(json);
-            return item["access_token"];
+            //if (enumerableUserProfile == null)
+            //{
+            //    return null;
+            //}
+
+            UserObject userObj = new UserObject();
+
+            var profileImageUrl = json[0]["profile_image_url"];
+            userObj.profile_image_url = profileImageUrl; // enumerableUserProfile.Select(t => (string)(t["profile_image_url"].ToString()));
+            return userObj;
         }
+
+
+
+
+
+        
     }
 }
