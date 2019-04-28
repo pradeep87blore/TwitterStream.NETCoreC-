@@ -67,7 +67,31 @@ namespace TwitterAccess
             return item["access_token"];
         }
 
-        public async Task<IEnumerable<string>> GetTweets(string userName, int count, string accessToken = null)
+        //public async Task<IEnumerable<string>> GetTweets(string userName, int count, string accessToken = null)
+        //{
+        //    if (accessToken == null)
+        //    {
+        //        accessToken = await GetAccessToken();
+        //    }
+
+        //    var requestUserTimeline = new HttpRequestMessage(HttpMethod.Get, string.Format("https://api.twitter.com/1.1/statuses/user_timeline.json?count={0}&screen_name={1}&trim_user=1&exclude_replies=1", count, userName));
+        //    requestUserTimeline.Headers.Add("Authorization", "Bearer " + accessToken);
+            
+
+        //    var httpClient = new HttpClient(handler);
+        //    HttpResponseMessage responseUserTimeLine = await httpClient.SendAsync(requestUserTimeline);
+        //    dynamic json = JsonConvert.DeserializeObject<object>(await responseUserTimeLine.Content.ReadAsStringAsync());
+        //    var enumerableTweets = (json as IEnumerable<dynamic>);
+
+        //    if (enumerableTweets == null)
+        //    {
+        //        return null;
+        //    }
+        //    return enumerableTweets.Select(t => (string)(t["text"].ToString()));
+        //}
+
+
+        public async Task<IEnumerable<TweetObject>> GetTweets(string userName, int count, string accessToken = null)
         {
             if (accessToken == null)
             {
@@ -76,7 +100,7 @@ namespace TwitterAccess
 
             var requestUserTimeline = new HttpRequestMessage(HttpMethod.Get, string.Format("https://api.twitter.com/1.1/statuses/user_timeline.json?count={0}&screen_name={1}&trim_user=1&exclude_replies=1", count, userName));
             requestUserTimeline.Headers.Add("Authorization", "Bearer " + accessToken);
-            
+
 
             var httpClient = new HttpClient(handler);
             HttpResponseMessage responseUserTimeLine = await httpClient.SendAsync(requestUserTimeline);
@@ -87,8 +111,21 @@ namespace TwitterAccess
             {
                 return null;
             }
-            return enumerableTweets.Select(t => (string)(t["text"].ToString()));
+
+            List<TweetObject> tweets = new List<TweetObject>();
+            foreach (var tweet in enumerableTweets)
+            {
+                TweetObject tweetObj = new TweetObject();
+                tweetObj.created_at = tweet["created_at"];
+                tweetObj.text = tweet["text"];
+
+                //var userInfo = tweet["user"];
+
+                tweets.Add(tweetObj);
+            }
+            return tweets;
         }
+
 
 
         public async Task<UserObject> GetUserInfo(string userId, string screen_name = "", string accessToken = null)
