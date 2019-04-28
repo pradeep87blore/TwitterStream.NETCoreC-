@@ -32,7 +32,7 @@ namespace TwitterStreamAPIProvider.Controllers
 
         // GET: api/TwitterStream
         [HttpGet("{userId}")]
-        public IEnumerable<string> GetTweets(string userId)
+        public IEnumerable<TweetObject> GetTweets(string userId)
         {
             TwitterAccesser tAccess = new TwitterAccesser();
             var tweets = tAccess.GetTweets(userId, 10);

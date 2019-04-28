@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TwitterStreamUI.Properties
+namespace TwitterUI.Properties
 {
 
 

@@ -1,7 +1,7 @@
-﻿<Application x:Class="TwitterStreamUI.App"
+﻿<Application x:Class="TwitterUI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:TwitterStreamUI"
+             xmlns:local="clr-namespace:TwitterUI"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
